@@ -5,7 +5,7 @@ const app = express();
 // test db connection
 db.connection.once('open', () => console.log("connected to db")).on("error", (err) => console.log("error connecting db -->", err))
 
-app.listen(3000, function() {
+app.listen(process.env.PORT || 3000, function() {
     console.log('listening on 3000')
 })
 
