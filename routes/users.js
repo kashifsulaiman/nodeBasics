@@ -23,4 +23,41 @@ router.post('/add', (req, res) => {
     });
 })
 
+router.post('/register', (req, res) => {
+    const { email, password } = req.body;
+    const user = new Users({ email, password });    
+
+    user.save()
+        .then(user => res.status(200).send(user))
+        .catch(err => res.status(400).send(err))
+})
+
+router.post('/login', async (req, res) => {
+    const { email, password } = req.body;
+    const user = await Users.findOne({ email })
+
+    if (!user) {
+        return res.send({ message: "No user found!" });
+    }
+
+    const isAuthenticated = await user.comparePassword(password);
+
+    if (!isAuthenticated) {
+        return res.send({ message: "Invalid Password!" });
+    }
+
+    const token = await user.generateToken();
+    res.header("x-auth", token);
+    res.send(user)
+})
+
+// protected route
+router.post("/logout", (req, res) => {
+    const token = req.header("x-auth");
+
+    Users.removeToken(token)
+        .then(() => res.send({message: "removed token"}))
+        .catch(err => res.send(err))
+})
+
 module.exports = router;
