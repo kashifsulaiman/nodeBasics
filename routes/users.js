@@ -1,8 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const Users = require('../models/Users');
+const verifyToken = require('../middlewares/verifyToken');
 
-router.get('/all', (req, res) => {
+router.get('/all', verifyToken, (req, res) => {
     const users = Users.find();
 
     users.then((data, err) => {
